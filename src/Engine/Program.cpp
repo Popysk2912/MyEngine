@@ -1,6 +1,6 @@
 #include "Program.h"
 
-Program::Program(int width, int height)
+Program::Program(const int width, const int height)
 {
     this->width = width; 
     this->height = height;
@@ -10,6 +10,13 @@ Program::Program(int width, int height)
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(sf::Context::getFunction))) {
         std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
     }
+    const GLubyte* vendor = glGetString(GL_VENDOR);
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
+    const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    std::cout << renderer << "; ";
+    std::cout << "OpenGL Version: " << version << "; ";
+    std::cout << "GLSL Version: " << glslVersion << ";\n";
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -28,7 +35,7 @@ void Program::loadResources()
     ResourceManager::LoadShader("default.vert", "default.frag", nullptr, "sprite");
 }
 
-void Program::setFrameRate(int frameRate)
+void Program::setFrameRate(const int frameRate)
 {
     this->window.setFramerateLimit(frameRate);
 }
@@ -58,7 +65,7 @@ void Program::run()
                 this->height = event.size.height;                
             }
         }
-        float dt = clock.restart().asSeconds();
+        const float dt = clock.restart().asSeconds();
         time = clock.getElapsedTime().asMilliseconds();
         this->update(dt);
         glClearColor(0.0, 0.0, 0.0, 0.0);

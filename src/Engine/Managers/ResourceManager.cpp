@@ -23,12 +23,12 @@ Shader ResourceManager::GetShader(const std::string& name)
         return it->second;
 
     std::cerr << "ERROR::SHADER: Shader not found with name " << name << std::endl;
-    return Shader();
+    return {};
 }
 
-Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, const std::string& name)
+Texture2D ResourceManager::LoadTexture(const char* file, const std::string& name)
 {
-    Textures[name] = loadTextureFromFile(file, alpha);
+    Textures[name] = loadTextureFromFile(file);
     return Textures[name];
 }
 
@@ -39,12 +39,12 @@ Texture2D ResourceManager::GetTexture(const std::string& name)
         return it->second;
 
     std::cerr << "ERROR::Texture: Texture not found with name " << name << std::endl;
-    return Texture2D();
+    return {};
 }
 
-std::vector<Texture2D> ResourceManager::LoadTileTexture(const char* file, bool alpha)
+std::vector<Texture2D> ResourceManager::LoadTileTexture(const char* file)
 {
-    tileTextures.push_back(loadTextureFromFile(file, alpha));
+    tileTextures.push_back(loadTextureFromFile(file));
     return tileTextures;
 }
 
@@ -53,7 +53,7 @@ std::vector<Texture2D>& ResourceManager::GetTileTextures()
     return tileTextures;
 }
 
-Texture2D ResourceManager::GetTileTexture(int index)
+Texture2D ResourceManager::GetTileTexture(const int index)
 {
     return tileTextures[index];
 }
@@ -93,22 +93,11 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile, const char* 
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
+Texture2D ResourceManager::loadTextureFromFile(const char* file)
 {
     Texture2D texture;
-    int nrChannels;
-    if (alpha)
-    {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
-        nrChannels = 4;
-    }
-    else
-    {
-        texture.Internal_Format = GL_RGB;
-        texture.Image_Format = GL_RGB;
-        nrChannels = 3;
-    }
+    texture.Internal_Format = GL_RGBA;
+    texture.Image_Format = GL_RGBA;
 
     int width = 0, height = 0;
     sf::Image image;
@@ -138,19 +127,17 @@ void ResourceManager::Clear()
 
 void ResourceManager::Init()
 {
-#ifdef DEBUG
-    std::string dirPath = getPath().string();
-    replaceChar(dirPath, '\\', '/');
-    std::cout << "Debug Build \n";
-    std::string resourcePath = dirPath + "/resources";
-    std::cout << "Resource Path: " << resourcePath << "\n";
-#elif defined(RELEASE)
+#ifdef NDEBUG
     auto exePath = std::filesystem::current_path().string();
     replaceChar(exePath, '\\', '/');
     auto resourcePath = exePath + "/resources";
-    std::cout << "Release Build \n";
+#else
+    auto dirPath = getPath().string();
+    replaceChar(dirPath, '\\', '/');
+    auto resourcePath = dirPath + "/resources";
 #endif
-    ResourceManager::resource_path = resourcePath;
+    std::cout << "Resource Path: " << resourcePath << "\n";
+    resource_path = resourcePath;
 }
 
 std::string ResourceManager::GetResourcePath()
@@ -161,12 +148,13 @@ std::string ResourceManager::GetResourcePath()
 unsigned char* ResourceManager::textureToCharArray(const sf::Image& image, int& width, int& height)
 {
     const sf::Uint8* pixels = image.getPixelsPtr();
-    unsigned int width_ = image.getSize().x;
-    unsigned int height_ = image.getSize().y;
+    const unsigned int width_ = image.getSize().x;
+    const unsigned int height_ = image.getSize().y;
 
-    size_t size = width_ * height_ * 4;
+    constexpr int nrChannels = 4;
+    const size_t size = width_ * height_ * nrChannels;
 
-    unsigned char* pixelArray = new unsigned char[size];
+    const auto pixelArray = new unsigned char[size];
     std::memcpy(pixelArray, pixels, size);
 
     width = width_;
@@ -175,7 +163,7 @@ unsigned char* ResourceManager::textureToCharArray(const sf::Image& image, int& 
     return pixelArray;
 }
 
-void ResourceManager::replaceChar(std::string& str, char oldChar, char newChar)
+void ResourceManager::replaceChar(std::string& str, const char oldChar, const char newChar)
 {
     for (char& c : str)
     {
@@ -197,7 +185,7 @@ std::filesystem::path ResourceManager::getPath()
     return currentPath;
 }
 
-std::vector<std::vector<int>> ResourceManager::LoadMatrixFromFile(std::string fileName, int ROWS, int COLS)
+std::vector<std::vector<int>> ResourceManager::LoadMatrixFromFile(const std::string &fileName, const int ROWS, const int COLS)
 {
     std::vector<std::vector<int>> matrix;
     matrix.resize(ROWS);

@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 #include "spriteRenderer.h"
 #include "sprite.h"
 #include "shader.h"
