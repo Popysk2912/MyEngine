@@ -10,7 +10,6 @@ Program::Program(const int width, const int height)
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(sf::Context::getFunction))) {
         std::cerr << "Failed to initialize OpenGL loader!" << std::endl;
     }
-    const GLubyte* vendor = glGetString(GL_VENDOR);
     const GLubyte* renderer = glGetString(GL_RENDERER);
     const GLubyte* version = glGetString(GL_VERSION);
     const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
@@ -22,10 +21,13 @@ Program::Program(const int width, const int height)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     this->Program::loadResources();
     shader = ResourceManager::GetShader("sprite");
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
+    primitive_shader = ResourceManager::GetShader("primitive");
+    const glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
     shader.SetMatrix4("projection", projection, true);
+    primitive_shader.SetMatrix4("projection", projection, true);
 
     spriteRenderer = std::make_unique<SpriteRenderer>(shader);
+    shapeRenderer = std::make_unique<ShapeRenderer>(primitive_shader);
    
 }
 
@@ -33,6 +35,7 @@ void Program::loadResources()
 {
     ResourceManager::Init();
     ResourceManager::LoadShader("default.vert", "default.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("primitive.vert", "primitive.frag", nullptr, "primitive");
 }
 
 void Program::setFrameRate(const int frameRate)

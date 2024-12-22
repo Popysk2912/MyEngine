@@ -38,11 +38,16 @@ public:
 	glm::vec2 getPosition() const;
 
 	Box getBoundingBox() const;
+
     glm::vec2 getSize() const;
+
+	glm::vec2 getVelocity() const;
 
 	GLfloat getRotate() const;
 
 	glm::vec3 getColor() const;
+
+	bool getCollision() const;
 
 	void setTexture(const Texture2D& texture);
 
@@ -50,12 +55,13 @@ public:
 
 	void setSize(const glm::vec2& size);
 
+	void setVelocity(const glm::vec2& velocity);
+
 	void setRotate(GLfloat rotate);
 
 	void setColor(const glm::vec3& color);
 
-	void printProperties();
-
+	void setCollision(bool collision);
 	
 private:
 	Texture2D texture;
@@ -63,4 +69,6 @@ private:
 	glm::vec2 size;
 	GLfloat rotate;
 	glm::vec3 color;
+	glm::vec2 velocity;
+	bool collision;
 };

@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "Managers/ResourceManager.h"
 #include "Managers/InputManager.h"
+#include "Primitives/shapeRenderer.h"
 
 class Program
 {
@@ -17,6 +18,7 @@ public:
 private:
     bool running = true;
     Shader shader;
+    Shader primitive_shader;
     sf::RenderWindow window;
 
 protected:
@@ -25,6 +27,7 @@ protected:
     float time = 0;
 
     std::unique_ptr<SpriteRenderer> spriteRenderer;
+    std::unique_ptr<ShapeRenderer> shapeRenderer;
 
     virtual void loadResources();
     virtual void init() = 0;

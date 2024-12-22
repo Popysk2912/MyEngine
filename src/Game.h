@@ -10,6 +10,7 @@ public:
 
 private:
     Sprite sprite;
+    Sprite sprite2;
 
 protected:
     void init() override;

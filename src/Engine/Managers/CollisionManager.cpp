@@ -1,39 +1,54 @@
-/*#include "CollisionManager.h"
+#include "CollisionManager.h"
 
 #include <algorithm>
 
-void CollisionManager::resolveCollision(GameObject& first, GameObject& other)
+void CollisionManager::resolveCollision(Sprite& first, const Sprite& other)
 {
-    if ((first.getBoundingBox().intersects(other.getBoundingBox()) && (first.collision && other.collision)))
+    if ((first.getBoundingBox().intersects(other.getBoundingBox()) && (first.getCollision() && other.getCollision())))
     {
-        auto firstBox = first.getBoundingBox();
-        auto otherBox = other.getBoundingBox();
+        const auto firstBox = first.getBoundingBox();
+        const auto otherBox = other.getBoundingBox();
 
-        float overlapX = std::min(firstBox.right(), otherBox.right()) - std::max(firstBox.x, otherBox.x);
-        float overlapY = std::min(firstBox.bottom(), otherBox.bottom()) - std::max(firstBox.y, otherBox.y);
+        const float overlapX = std::min(firstBox.right(), otherBox.right()) - std::max(firstBox.left(), otherBox.left());
+        const float overlapY = std::min(firstBox.top(), otherBox.top()) - std::max(firstBox.bottom(), otherBox.bottom());
 
-        if (overlapX < overlapY) {
+        constexpr float epsilon = 0.001f;
+        if (std::abs(overlapX - overlapY) < epsilon) {
             if (firstBox.center().x < otherBox.center().x) {
-                first.setPosition(Vector2f{otherBox.x - firstBox.width, firstBox.y});
+                first.setPosition(glm::vec2{otherBox.left() - firstBox.width, firstBox.y});
+            } else {
+                first.setPosition(glm::vec2{otherBox.right(), firstBox.y});
             }
-            else {
-                first.setPosition(Vector2f{otherBox.right(), firstBox.y});
+
+            if (firstBox.center().y < otherBox.center().y) {
+                first.setPosition(glm::vec2{firstBox.x, otherBox.bottom() - firstBox.height});
+            } else {
+                first.setPosition(glm::vec2{firstBox.x, otherBox.top()});
             }
-            first.setVelocity(Vector2f{0, first.getVelocity().y});
+
+            first.setVelocity(glm::vec2{0, 0});
+        }
+        else if (overlapX < overlapY) {
+            if (firstBox.center().x < otherBox.center().x) {
+                first.setPosition(glm::vec2{otherBox.left() - firstBox.width, firstBox.y});
+            } else {
+                first.setPosition(glm::vec2{otherBox.right(), firstBox.y});
+            }
+            first.setVelocity(glm::vec2{0, first.getVelocity().y});
         }
         else {
             if (firstBox.center().y < otherBox.center().y) {
-                first.setPosition(Vector2f{firstBox.x, otherBox.y - firstBox.height});
+                first.setPosition(glm::vec2{firstBox.x, otherBox.bottom() - firstBox.height});
+            } else {
+                first.setPosition(glm::vec2{firstBox.x, otherBox.top()});
             }
-            else {
-                first.setPosition(Vector2f{firstBox.x, otherBox.bottom()});
-            }
-            first.setVelocity(Vector2f{first.getVelocity().x, 0});
+            first.setVelocity(glm::vec2{first.getVelocity().x, 0});
         }
     }
 }
 
-void CollisionManager::resolveCollision(TileMap& map, GameObject& first)
+
+/*void CollisionManager::resolveCollision(TileMap& map, GameObject& first)
 {
     for (auto& sprites : map.getTiles())
         for (auto& other : sprites)
@@ -48,21 +63,21 @@ void CollisionManager::resolveCollision(TileMap& map, GameObject& first)
 
                 if (overlapX < overlapY) {
                     if (firstBox.center().x < otherBox.center().x) {
-                        first.setPosition(Vector2f(otherBox.x - firstBox.width, firstBox.y));
+                        first.setPosition(glm::vec2(otherBox.x - firstBox.width, firstBox.y));
                     }
                     else {
-                        first.setPosition(Vector2f(otherBox.right(), firstBox.y));
+                        first.setPosition(glm::vec2(otherBox.right(), firstBox.y));
                     }
-                    first.setVelocity(Vector2f(0, first.getVelocity().y));
+                    first.setVelocity(glm::vec2(0, first.getVelocity().y));
                 }
                 else {
                     if (firstBox.center().y < otherBox.center().y) {
-                        first.setPosition(Vector2f(firstBox.x, otherBox.y - firstBox.height));
+                        first.setPosition(glm::vec2(firstBox.x, otherBox.y - firstBox.height));
                     }
                     else {
-                        first.setPosition(Vector2f(firstBox.x, otherBox.bottom()));
+                        first.setPosition(glm::vec2(firstBox.x, otherBox.bottom()));
                     }
-                    first.setVelocity(Vector2f(first.getVelocity().x, 0));
+                    first.setVelocity(glm::vec2(first.getVelocity().x, 0));
                 }
             }
         }
@@ -83,21 +98,21 @@ void CollisionManager::resolveCollision(GameObject& first, TileMap& map)
 
                 if (overlapX < overlapY) {
                     if (firstBox.center().x < otherBox.center().x) {
-                        first.setPosition(Vector2f(otherBox.x - firstBox.width, firstBox.y));
+                        first.setPosition(glm::vec2(otherBox.x - firstBox.width, firstBox.y));
                     }
                     else {
-                        first.setPosition(Vector2f(otherBox.right(), firstBox.y));
+                        first.setPosition(glm::vec2(otherBox.right(), firstBox.y));
                     }
-                    first.setVelocity(Vector2f(0, first.getVelocity().y));
+                    first.setVelocity(glm::vec2(0, first.getVelocity().y));
                 }
                 else {
                     if (firstBox.center().y < otherBox.center().y) {
-                        first.setPosition(Vector2f(firstBox.x, otherBox.y - firstBox.height));
+                        first.setPosition(glm::vec2(firstBox.x, otherBox.y - firstBox.height));
                     }
                     else {
-                        first.setPosition(Vector2f(firstBox.x, otherBox.bottom()));
+                        first.setPosition(glm::vec2(firstBox.x, otherBox.bottom()));
                     }
-                    first.setVelocity(Vector2f(first.getVelocity().x, 0));
+                    first.setVelocity(glm::vec2(first.getVelocity().x, 0));
                 }
             }
         }
