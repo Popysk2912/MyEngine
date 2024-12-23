@@ -19,9 +19,9 @@ private:
     bool running = true;
     Shader shader;
     Shader primitive_shader;
-    sf::RenderWindow window;
 
 protected:
+    sf::RenderWindow window;
     int width, height; 
     sf::Clock clock;
     float time = 0;

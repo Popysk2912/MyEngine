@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "Engine/Program.h"
+#include "Grid.h"
 
 class Game final : public Program
 {
@@ -9,8 +10,8 @@ public:
     Game(int width, int height);
 
 private:
-    Sprite sprite;
-    Sprite sprite2;
+    Grid grid;
+    Texture2D frameT;
 
 protected:
     void init() override;

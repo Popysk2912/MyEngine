@@ -32,7 +32,7 @@ Texture2D ResourceManager::LoadTexture(const char* file, const std::string& name
     return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(const std::string& name)
+Texture2D ResourceManager::GetTexture(const std::string &name)
 {
     auto it = Textures.find(name);
     if (it != Textures.end())

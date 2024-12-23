@@ -1,40 +1,49 @@
 #include "Game.h"
-#include "Engine/Managers/CollisionManager.h"
+
 
 Game::Game(const int width, const int height): Program(width, height) {}
 
 void Game::init() {
     loadResources();
-    sprite.setTexture(ResourceManager::GetTexture("texture"));
-    sprite.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    sprite.setSize(glm::vec2(100.0f, 100.0f));
-    sprite.setPosition(glm::vec2(100.0f, 100.0f));
-    sprite.setCollision(true);
-
-    sprite2.setTexture(ResourceManager::GetTexture("texture"));
-    sprite2.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
-    sprite2.setSize(glm::vec2(100.0f, 100.0f));
-    sprite2.setPosition(glm::vec2(300.0f, 200.0f));
-    sprite2.setCollision(true);
+    grid = Grid(16, 16,64,64);
+    frameT = ResourceManager::GetTexture("frame");
 }
 
 void Game::loadResources()
 {
-    InputManager::createAxis(sf::Keyboard::Down, sf::Keyboard::Up, "Vertical");
-    InputManager::createAxis(sf::Keyboard::Left, sf::Keyboard::Right, "Horizontal");
-    ResourceManager::LoadTexture("texture.jpg", "texture");
+    for (int i = 1; i <= 8; i++)
+    {
+        ResourceManager::LoadTexture((std::to_string(i) + ".png").c_str(), std::to_string(i));
+    }
+    ResourceManager::LoadTexture("empty.png", "empty");
+    ResourceManager::LoadTexture("flag.png", "flag");
+    ResourceManager::LoadTexture("metal.png", "metal");
+    ResourceManager::LoadTexture("bomb.png", "bomb");
+    ResourceManager::LoadTexture("frame.png", "frame");
 }
 
 void Game::update(const float deltaTime)
 {
-    sprite.setVelocity({InputManager::getAxis("Horizontal") * 100.0f, InputManager::getAxis("Vertical") * 100.0f});
-    sprite.setPosition(sprite.getPosition() + (sprite.getVelocity() * deltaTime));
-    CollisionManager::resolveCollision(sprite, sprite2);
+    const int mPos_x = (static_cast<int>(InputManager::getMousePosition(window).x) - 64) / 32;
+    const int mPos_y = (height - (static_cast<int>(InputManager::getMousePosition(window).y) + 64)) / 32;
+    if (InputManager::isMouseClicked(sf::Mouse::Left))
+    {
+        if (grid.openCell(mPos_x, mPos_y) == -1)
+        {
+            grid.openAll();
+        }
+    }
+    else if (InputManager::isMouseClicked(sf::Mouse::Right))
+    {
+        grid.setFlag(mPos_x, mPos_y);
+    }
+    if (InputManager::isKeyDown(sf::Keyboard::R))
+        grid = Grid(16, 16,64,64);
 }
 
-void Game::render()
-{
-    sprite.draw(*spriteRenderer);
-    sprite2.draw(*spriteRenderer);
-    shapeRenderer->DrawLine({sprite.getBoundingBox().left(), sprite.getBoundingBox().top()},{sprite.getBoundingBox().right(), sprite.getBoundingBox().bottom()}, glm::vec3(1.0f, 0.5f, 1.0f), 5);
+void Game::render() {
+    grid.draw(*spriteRenderer);
+    spriteRenderer->DrawSprite(frameT, {0, 0}, {640, 640}, 0, {1,1,1});
 }
+
+

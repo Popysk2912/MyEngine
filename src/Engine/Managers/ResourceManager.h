@@ -18,7 +18,7 @@ public:
     static Shader GetShader(const std::string& name);    
 
     static Texture2D LoadTexture(const char* file, const std::string& name);
-    static Texture2D GetTexture(const std::string& name);
+    static Texture2D GetTexture(const std::string &name);
 
     static std::vector<Texture2D> LoadTileTexture(const char* file);
     static std::vector<Texture2D>& GetTileTextures();

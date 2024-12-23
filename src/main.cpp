@@ -9,7 +9,7 @@ int main()
     std::cout << "Build type: Debug" << std::endl;
     #endif
 
-    Game game(800, 600);
+    Game game(640, 640);
     game.run();
 
 
