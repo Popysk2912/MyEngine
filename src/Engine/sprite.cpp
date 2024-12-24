@@ -17,7 +17,7 @@ glm::vec2 Box::center() const { return {x + width / 2.0f, y + height / 2.0f}; }
 
 
 Sprite::Sprite() :
-texture(Texture2D()), position(glm::vec2(0, 0)), size(glm::vec2(0, 0)), rotate(0), color(glm::vec3(0, 0, 0)),
+texture(Texture2D()), position(glm::vec2(0, 0)), size(glm::vec2(0, 0)), rotate(0), color(glm::vec3(1.0f, 1.0f, 1.0f)),
 velocity(glm::vec2(0, 0)), collision(false) { }
 
 Sprite::Sprite(const Texture2D &texture, const glm::vec2 position, const glm::vec2 size, const GLfloat rotate, const glm::vec3 color) :

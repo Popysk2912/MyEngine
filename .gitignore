@@ -6,5 +6,7 @@ out
 .vscode
 cmake-build-release
 cmake-build-debug
+cmake-build-release-mingw
 /cmake-build-release/
 /cmake-build-debug/
+/cmake-build-release-mingw/
